@@ -29,7 +29,6 @@ class CategorySingleAPI(generics.GenericAPIView):
 class ProductListAPI(generics.GenericAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    pagination_class = PageNumberPagination
 
     def get(self, request, *arg, **kwargs):
         category_id = request.query_params.get('category')
