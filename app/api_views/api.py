@@ -47,6 +47,16 @@ class ProductListAPI(generics.GenericAPIView):
         return Response(serializer.data)
 
 
+class ProductSingleAPI(generics.GenericAPIView):
+    queryset = Product.objects
+    serializer_class = ProductSerializer
+
+    def get(self, request, pk, *arg, **kwargs):
+        c_product = self.get_object()
+        serializer = self.get_serializer(c_product)
+        return Response(serializer.data)
+
+
 class BrandListAPI(generics.GenericAPIView):
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
@@ -58,4 +68,14 @@ class BrandListAPI(generics.GenericAPIView):
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
         serializer = self.get_serializer(self.get_queryset(), many=True)
+        return Response(serializer.data)
+
+
+class BrandSingleAPI(generics.GenericAPIView):
+    queryset = Brand.objects.all()
+    serializer_class = BrandSerializer
+
+    def get(self, request, pk, *arg, **kwargs):
+        c_brand = self.get_object()
+        serializer = self.get_serializer(c_brand)
         return Response(serializer.data)
