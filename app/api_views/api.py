@@ -2,6 +2,7 @@ from rest_framework import generics, status, exceptions
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
+from app.authentication import JwtAuthentication
 from app.exceptions import ClientException
 from app.models import Category, Product, Brand, Payment, Order
 from app.models.rating import Rating
@@ -156,6 +157,7 @@ class ProductBoughtSameUsersAPI(generics.GenericAPIView):
 class ProductSingleAPI(generics.GenericAPIView):
     queryset = Product.objects
     serializer_class = ProductDetailSerializer
+    authentication_classes = (JwtAuthentication,)
 
     def get(self, request, pk, *arg, **kwargs):
         c_product = self.get_object()

@@ -8,7 +8,7 @@ from app.models.user import User
 from app.permissions import UserPermission, LoggedPermission, OwnerCartPermission, OwnerOrderPermission
 from app.serializers import UserSerializer, UserInfoSerializer, UserRateProductSerializer, RatingResponseSerializer, \
     UserCartSerializer, UserCartAddSerializer, UserOrderSerializer, UserOrderCreateSerializer, OrderItemSerializer, \
-    OrderItemCreateSerializer, PaymentSerializer
+    OrderItemCreateSerializer, PaymentSerializer, ProductRatingsSerializer
 from app.utils.constants import SHIPPING_FEE
 
 
@@ -36,10 +36,25 @@ class UserInfoAPI(generics.GenericAPIView):
 
 
 class UserRateProductAPI(generics.GenericAPIView):
-    queryset = User.objects
-    serializer_class = UserRateProductSerializer
+    queryset = Rating.objects
+    # serializer_class = UserRateProductSerializer
     authentication_classes = (JwtAuthentication,)
     permission_classes = (UserPermission,)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return ProductRatingsSerializer
+        if self.request.method == 'POST':
+            return UserRateProductSerializer
+
+    def get(self, request, *arg, **kwargs):
+        product_id = self.request.query_params.get('product')
+        c_user = self.request.user
+        ratings = self.get_queryset().filter(user=c_user.id)
+        if product_id is not None:
+            ratings = ratings.filter(product=product_id)
+        serializer = self.get_serializer(ratings, many=True)
+        return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
         data = request.data.copy()

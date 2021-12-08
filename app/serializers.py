@@ -6,7 +6,7 @@ from app.models import Category, Product, Brand, Image, Cart, OrderItem, Order, 
 from app.models.rating import Rating, RatingResponse
 from app.models.user import User
 from app.utils import jwt_util, string_util
-from app.utils.constants import TOKEN_TYPE, ERROR_MESSAGE, SHIPPING_FEE
+from app.utils.constants import TOKEN_TYPE, ERROR_MESSAGE, SHIPPING_FEE, ORDER_STATUS
 
 
 class LoginSerializer(serializers.ModelSerializer):
@@ -200,10 +200,11 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
     specifications = SpecificationsSerializer()
     discount = serializers.SerializerMethodField()
+    is_buy = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
-        fields = tuple([field.name for field in model._meta.fields if field.name not in ['price', 'sale_price']]) + ('price', 'sale_price', 'discount', 'avg_rating', 'brand', 'ratings', 'images')
+        fields = tuple([field.name for field in model._meta.fields if field.name not in ['price', 'sale_price']]) + ('is_buy', 'price', 'sale_price', 'discount', 'avg_rating', 'brand', 'ratings', 'images')
         extra_kwargs = {
             'id': {'read_only': True}
         }
@@ -224,6 +225,11 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
     def get_discount(self, obj):
         return int(float((obj.price-obj.sale_price) / obj.price)*100)
+
+    def get_is_buy(self, obj):
+        c_user = self.context.get('request').user
+        order_items = OrderItem.objects.filter(order__status=ORDER_STATUS.SUCCESS, order__user=c_user.id, product=obj.id)
+        return len(order_items) > 0
 
 
 class CategoryFullSerializer(serializers.ModelSerializer):
