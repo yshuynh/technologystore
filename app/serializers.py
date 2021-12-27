@@ -186,7 +186,7 @@ class ProductSerializer(serializers.ModelSerializer):
 class ProductLiteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('id', 'name', 'name_latin')
+        fields = ('id', 'name', 'name_latin', 'thumbnail')
         extra_kwargs = {
             'id': {'read_only': True}
         }
