@@ -233,6 +233,12 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         order_items = OrderItem.objects.filter(order__status=ORDER_STATUS.SUCCESS, order__user=c_user.id, product=obj.id)
         return len(order_items) > 0
 
+    def to_representation(self, instance):
+        data = super(ProductDetailSerializer, self).to_representation(instance)
+        print(data['description'])
+        data['description'] = data['description'].replace('<img', '<img style="height:50px; width:50px;"')
+        return data
+
 
 class CategoryFullSerializer(serializers.ModelSerializer):
     # products = serializers.SerializerMethodField()
