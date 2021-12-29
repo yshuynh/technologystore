@@ -1,3 +1,4 @@
+from django.db.models import Avg
 from rest_framework import generics, status, exceptions
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
@@ -131,7 +132,7 @@ class ProductSuggestionAPI(generics.GenericAPIView):
     serializer_class = ProductSerializer
 
     def get(self, request, *arg, **kwargs):
-        queryset = self.get_queryset()
+        queryset = self.get_queryset().annotate(average_stars=Avg('ratings__rate')).order_by('-average_stars')
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
