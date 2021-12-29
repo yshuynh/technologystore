@@ -8,7 +8,7 @@ from app.models.user import User
 from app.permissions import UserPermission, LoggedPermission, OwnerCartPermission, OwnerOrderPermission
 from app.serializers import UserSerializer, UserInfoSerializer, UserRateProductSerializer, RatingResponseSerializer, \
     UserCartSerializer, UserCartAddSerializer, UserOrderSerializer, UserOrderCreateSerializer, OrderItemSerializer, \
-    OrderItemCreateSerializer, PaymentSerializer, ProductRatingsSerializer
+    OrderItemCreateSerializer, PaymentSerializer, ProductRatingsSerializer, UserOrderCancelSerializer
 from app.utils.constants import SHIPPING_FEE
 
 
@@ -258,7 +258,7 @@ class UserOrderListAPI(generics.GenericAPIView):
             return UserOrderCreateSerializer
 
     def get(self, request, *arg, **kwargs):
-        queryset = self.get_queryset().filter(user=request.user)
+        queryset = self.get_queryset().filter(user=request.user).order_by('-created_at')
         status = request.query_params.get('status')
         if status is not None:
             queryset = queryset.filter(status=status)
@@ -350,4 +350,19 @@ class UserOrderSingleAPI(generics.GenericAPIView):
     def get(self, request, pk, *arg, **kwargs):
         queryset = self.get_object()
         serializer = self.get_serializer(queryset)
+        return Response(serializer.data)
+
+
+class UserOrderCancelAPI(generics.GenericAPIView):
+    queryset = Order.objects
+    serializer_class = UserOrderCancelSerializer
+    authentication_classes = (JwtAuthentication,)
+    permission_classes = (UserPermission, OwnerOrderPermission)
+
+    def put(self, request, pk, *arg, **kwargs):
+        queryset = self.get_object()
+        serializer = self.get_serializer(queryset, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        serializer = UserOrderSerializer(queryset)
         return Response(serializer.data)

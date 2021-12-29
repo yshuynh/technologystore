@@ -1,7 +1,9 @@
 import jwt
 from django.contrib.auth.hashers import make_password
+from django.utils.datetime_safe import datetime
 from rest_framework import serializers, exceptions
 
+from app.exceptions import ClientException
 from app.models import Category, Product, Brand, Image, Cart, OrderItem, Order, Payment
 from app.models.rating import Rating, RatingResponse
 from app.models.user import User
@@ -443,3 +445,23 @@ class OrderItemSerializer(serializers.ModelSerializer):
         model = OrderItem
         fields = ('count', 'order_price', 'product')
 
+
+class UserOrderCancelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = '__all__'
+
+    def to_internal_value(self, data):
+        return data
+
+    def update(self, instance, validated_data):
+        # print("hello")
+        delta_time = datetime.utcnow() - instance.created_at.replace(tzinfo=None)
+        # print(delta_time.seconds/60)
+        # if delta_time.seconds/60 > 60:
+        #     raise ClientException("It's been more than 60 minutes since you created the order. Please contact admin.")
+        if instance.status != ORDER_STATUS.WAITING_CONFIRM:
+            raise ClientException("Order has been processed and cannot be cancelled. Please contact admin.")
+        instance.status = ORDER_STATUS.CANCEL
+        instance.save()
+        return instance
