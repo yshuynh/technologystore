@@ -34,6 +34,10 @@ class CustomUserAdmin(UserAdmin):
 
 class CustomRatingAdmin(admin.ModelAdmin):
     list_display = ('id', 'get_user', 'rate', 'comment', 'get_product', 'get_response', 'is_solved', 'btn_add_response')
+    search_fields = (
+        "id",
+        "comment",
+    )
 
     @display(description='User')
     def get_user(self, obj):
@@ -74,6 +78,13 @@ class CustomCategoryAdmin(admin.ModelAdmin):
 
 class CustomProductAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'get_thumbnail', 'brand', 'sale_price', 'category', 'short_description')
+    list_filter = ['category', 'brand']
+    search_fields = (
+        "id",
+        "name",
+        "brand__name",
+        "category__name",
+    )
 
     @display(description='Thumbnail')
     def get_thumbnail(self, obj):
@@ -140,6 +151,11 @@ class CustomCartAdmin(admin.ModelAdmin):
 
 class CustomOrderAdmin(admin.ModelAdmin):
     list_display = ('id', 'status', 'user', 'get_payment', 'is_paid', 'info', 'total_cost', 'items')
+    search_fields = (
+        "status",
+        "id",
+        "user__name"
+    )
 
     @display(description='Payment')
     def get_payment(self, obj):
@@ -172,7 +188,7 @@ class CustomOrderAdmin(admin.ModelAdmin):
         return obj.product.sale_price
 
     def get_queryset(self, request):
-        return super(CustomOrderAdmin, self).get_queryset(request).order_by('user__id')
+        return super(CustomOrderAdmin, self).get_queryset(request).order_by('-created_at')
 
 
 admin.site.register(User, CustomUserAdmin)
