@@ -203,6 +203,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     specifications = SpecificationsSerializer()
     discount = serializers.SerializerMethodField()
     is_buy = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -233,11 +234,11 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         order_items = OrderItem.objects.filter(order__status=ORDER_STATUS.SUCCESS, order__user=c_user.id, product=obj.id)
         return len(order_items) > 0
 
-    def to_representation(self, instance):
-        data = super(ProductDetailSerializer, self).to_representation(instance)
-        print(data['description'])
-        data['description'] = data['description'].replace('<img', '<img style="height:50px; width:50px;"')
-        return data
+    def get_description(self, obj):
+        img_style = self.context.get('request').query_params.get('img_style')
+        if img_style is None:
+            return obj.description
+        return obj.description.replace('<img', f'<img style="{img_style}"')
 
 
 class CategoryFullSerializer(serializers.ModelSerializer):
