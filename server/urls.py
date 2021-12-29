@@ -27,8 +27,9 @@ urlpatterns = [
     path('admin_login', AdminPageLoginAPI.as_view(), name="logout_api"),
     path('admin', RedirectView.as_view(url='admin/', permanent=False), name='admin2'),
     path('admin/', admin.site.urls),
+    path('ckeditor/', include('ckeditor_uploader.urls')),
     path('api/', include('app.api_views.urls')),
     path('', MainPageAPI.as_view(), name='main_page')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
+              + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
               + [url(r'.*', MainPageAPI.as_view(), name='main_page_catch_all')]
-              # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
