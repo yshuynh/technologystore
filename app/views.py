@@ -50,7 +50,7 @@ class AdminPageLoginAPI(generics.GenericAPIView):
             raise ClientException('User not found.')
         serializer = self.get_serializer(c_user)
         response = HttpResponseRedirect('/admin')
-        access_token = serializer.data.get('access_token')
+        access_token = serializer.data.get('access_token').encode("utf-8")
         print(access_token)
-        response.set_cookie('access_token', serializer.data.get('access_token'))
+        response.set_cookie('access_token', access_token)
         return response
