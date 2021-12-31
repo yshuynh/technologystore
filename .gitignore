@@ -130,3 +130,5 @@ dmypy.json
 .pyre/
 .idea/
 rm all files
+
+venv39/
