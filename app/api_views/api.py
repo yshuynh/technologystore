@@ -11,7 +11,7 @@ from app.models.user import User, NONE_USER
 from app.serializers import CategoryFullSerializer, ProductSerializer, CategorySerializer, BrandSerializer, \
     BrandFullSerializer, LoginSerializer, RegisterSerializer, ProductDetailSerializer, ProductRatingsSerializer, \
     RefreshTokenSerializer, PaymentSerializer, UserOrderCreateSerializer, UserOrderSerializer, ProductLiteSerializer
-from app.utils import string_util
+from app.utils import string_util, email_util
 from app.utils.string_util import convert_vietnamese_to_latin
 
 
@@ -55,6 +55,7 @@ class RegisterAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            email_util.send_register_email(serializer.data)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
