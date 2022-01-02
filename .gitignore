@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 db.sqlite3
 media/uploads/
-app/static/ckeditor/
+static/ckeditor/
 
 # C extensions
 *.so
