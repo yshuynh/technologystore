@@ -9,6 +9,7 @@ from app.permissions import UserPermission, LoggedPermission, OwnerCartPermissio
 from app.serializers import UserSerializer, UserInfoSerializer, UserRateProductSerializer, RatingResponseSerializer, \
     UserCartSerializer, UserCartAddSerializer, UserOrderSerializer, UserOrderCreateSerializer, OrderItemSerializer, \
     OrderItemCreateSerializer, PaymentSerializer, ProductRatingsSerializer, UserOrderCancelSerializer
+from app.utils import email_util
 from app.utils.constants import SHIPPING_FEE
 
 
@@ -289,6 +290,9 @@ class UserOrderListAPI(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         c_order = serializer.save()
         serializer = UserOrderSerializer(c_order)
+        email_data = serializer.data.copy()
+        email_data['email'] = request.user.email
+        email_util.send_order_email(email_data)
         return Response(serializer.data)
 
     # def post(self, request, *arg, **kwargs):
