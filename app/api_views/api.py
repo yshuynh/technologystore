@@ -31,7 +31,7 @@ class LoginAPI(generics.GenericAPIView):
             raise ClientException('User not found.')
         serializer = self.get_serializer(c_user)
         response = Response(serializer.data)
-        response.set_cookie('access_token', serializer.data.get('access_token'))
+        response.set_cookie('access_token', serializer.data.get('access_token').decode("utf-8"))
         return response
 
 
