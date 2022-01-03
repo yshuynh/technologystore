@@ -29,7 +29,12 @@ class CustomUserAdmin(UserAdmin):
         }),
         (_('Important dates'), {'fields': ('created_at', 'updated_at')}),
     )
-    list_display = ('username', 'email', 'name', 'is_staff')
+
+    list_display = ('username', 'email', 'name', 'is_superuser', 'is_staff', 'get_groups')
+
+    @display(description='Groups')
+    def get_groups(self, obj):
+        return [e + " " for e in obj.groups.values_list('name', flat=True)]
 
 
 class CustomRatingAdmin(admin.ModelAdmin):
