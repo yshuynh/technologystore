@@ -20,6 +20,7 @@ admin.site.register(Brand)
 
 
 class CustomUserAdmin(UserAdmin):
+    list_per_page = 10
     readonly_fields = ('created_at', 'updated_at')
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
@@ -30,7 +31,7 @@ class CustomUserAdmin(UserAdmin):
         (_('Important dates'), {'fields': ('created_at', 'updated_at')}),
     )
 
-    list_display = ('username', 'email', 'name', 'is_superuser', 'is_staff', 'get_groups')
+    list_display = ('username', 'email', 'name', 'is_superuser', 'is_staff')
 
     @display(description='Groups')
     def get_groups(self, obj):
@@ -38,6 +39,7 @@ class CustomUserAdmin(UserAdmin):
 
 
 class CustomRatingAdmin(admin.ModelAdmin):
+    list_per_page = 20
     list_display = ('id', 'get_user', 'rate', 'comment', 'get_product', 'get_response', 'is_solved', 'btn_add_response')
     search_fields = (
         "id",
@@ -82,6 +84,7 @@ class CustomCategoryAdmin(admin.ModelAdmin):
 
 
 class CustomProductAdmin(admin.ModelAdmin):
+    list_per_page = 10
     list_display = ('id', 'name', 'get_thumbnail', 'brand', 'sale_price', 'category', 'short_description')
     list_filter = ['category', 'brand']
     search_fields = (

@@ -1,3 +1,4 @@
+from ckeditor.fields import RichTextField
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.db import models
 
@@ -15,9 +16,8 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     category = models.ForeignKey('Category', on_delete=models.CASCADE, related_name='products')
     specifications = models.TextField()
-    short_description = models.TextField()
+    short_description = RichTextField()
     description = RichTextUploadingField()
-    images = models.ManyToManyField('Image', related_name='products', blank=True)
     images_list = RichTextUploadingField(default='')
 
     class Meta:
