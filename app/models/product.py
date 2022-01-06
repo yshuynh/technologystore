@@ -18,6 +18,7 @@ class Product(models.Model):
     short_description = models.TextField()
     description = RichTextUploadingField()
     images = models.ManyToManyField('Image', related_name='products', blank=True)
+    images_list = RichTextUploadingField(default='')
 
     class Meta:
         db_table = 'product'
