@@ -1,3 +1,5 @@
+import re
+
 import jwt
 from django.contrib.auth.hashers import make_password
 from django.utils.datetime_safe import datetime
@@ -223,8 +225,11 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         return round(float(sum(list_rate)/len(list_rate)), 1)
 
     def get_images(self, obj):
-        serializer = ImageSerializer(obj.images.all(), many=True)
-        return serializer.data
+        # serializer = ImageSerializer(obj.images.all(), many=True)
+        c_list = re.findall(r'src=\"(.*?)\"', obj.images_list)
+        print(c_list)
+        data_list = [{'url': e} for e in c_list]
+        return data_list
 
     def get_discount(self, obj):
         return int(float((obj.price-obj.sale_price) / obj.price)*100)
