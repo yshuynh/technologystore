@@ -26,11 +26,12 @@ class CustomUserAdmin(UserAdmin):
         (None, {'fields': ('username', 'password')}),
         (_('Personal info'), {'fields': ('name', 'email', 'role')}),
         (_('Permissions'), {
-            'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
+            'fields': ('is_active', 'is_staff', 'is_superuser'),
         }),
         (_('Important dates'), {'fields': ('created_at', 'updated_at')}),
     )
 
+    list_filter = ('is_active', 'is_staff', 'is_superuser')
     list_display = ('username', 'email', 'name', 'is_superuser', 'is_staff')
 
     @display(description='Groups')
