@@ -2,6 +2,7 @@ from django.urls import path, include
 from .api import *
 
 urlpatterns = [
+    path('home_page', HomePageAPI.as_view(), name='home_page'),
     path('categories', CategoryListAPI.as_view(), name='category_list'),
     path('categories/<str:pk>', CategorySingleAPI.as_view(), name='category_single'),
     path('products', ProductListAPI.as_view(), name='product_list'),

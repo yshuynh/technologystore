@@ -2,6 +2,7 @@ import re
 
 import jwt
 from django.contrib.auth.hashers import make_password
+from django.db.models import Avg
 from django.utils.datetime_safe import datetime
 from rest_framework import serializers, exceptions
 
@@ -245,6 +246,26 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             return obj.description
         return obj.description.replace('<img', f'<img style="{img_style}"')
 
+
+class CategoryFullHomePageSerializer(serializers.ModelSerializer):
+    products = serializers.SerializerMethodField()
+    brands = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Category
+        fields = tuple([field.name for field in model._meta.fields]) + ('brands', 'products')
+        extra_kwargs = {
+            'id': {'read_only': True}
+        }
+
+    def get_products(self, obj):
+        queryset = obj.products.all().annotate(average_stars=Avg('ratings__rate')).order_by('-average_stars')[:4]
+        serializer = ProductSerializer(queryset, many=True)
+        return serializer.data
+
+    def get_brands(self, obj):
+        serializer = BrandSerializer(obj.brands.all(), many=True)
+        return serializer.data
 
 class CategoryFullSerializer(serializers.ModelSerializer):
     # products = serializers.SerializerMethodField()

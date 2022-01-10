@@ -10,7 +10,8 @@ from app.models.rating import Rating
 from app.models.user import User, NONE_USER
 from app.serializers import CategoryFullSerializer, ProductSerializer, CategorySerializer, BrandSerializer, \
     BrandFullSerializer, LoginSerializer, RegisterSerializer, ProductDetailSerializer, ProductRatingsSerializer, \
-    RefreshTokenSerializer, PaymentSerializer, UserOrderCreateSerializer, UserOrderSerializer, ProductLiteSerializer
+    RefreshTokenSerializer, PaymentSerializer, UserOrderCreateSerializer, UserOrderSerializer, ProductLiteSerializer, \
+    CategoryFullHomePageSerializer
 from app.utils import string_util, email_util
 from app.utils.string_util import convert_vietnamese_to_latin
 
@@ -58,6 +59,15 @@ class RegisterAPI(generics.GenericAPIView):
             email_util.send_register_email(serializer.data)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class HomePageAPI(generics.GenericAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategoryFullHomePageSerializer
+
+    def get(self, request, *arg, **kwargs):
+        serializer = self.get_serializer(self.get_queryset(), many=True)
+        return Response(serializer.data)
 
 
 class CategoryListAPI(generics.GenericAPIView):
